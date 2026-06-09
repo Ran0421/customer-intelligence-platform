@@ -108,6 +108,16 @@ The deployed Streamlit application allows users to:
 ![Low Risk Prediction](screenshots/low_risk_prediction.png)
 
 ---
+## Business Impact
+
+This solution helps telecom companies:
+
+- Identify customers at risk of churn
+- Prioritize retention campaigns
+- Reduce customer acquisition costs
+- Improve customer lifetime value
+- Support data-driven business decisions
+---
 
 # Future Improvements
 
