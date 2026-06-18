@@ -1,135 +1,139 @@
-# Customer Intelligence & Churn Prediction Platform
+# Customer Churn Prediction Platform
 
-An end-to-end machine learning and analytics platform designed to predict customer churn and generate actionable business insights for telecom retention strategies.
-
----
-
-# Business Problem
-
-Customer churn is one of the biggest revenue challenges for telecom companies. Retaining existing customers is significantly more cost-effective than acquiring new ones.
-
-This project analyzes customer behavior, identifies churn drivers, and deploys a real-time churn prediction system to support proactive retention strategies.
+An end-to-end machine learning platform to predict telecom customer churn, explain individual risk factors, and surface actionable retention strategies.
 
 ---
 
-# Project Features
+## Overview
 
-- Data cleaning and preprocessing
-- Exploratory Data Analysis (EDA)
-- Business insight generation
-- Feature engineering
-- Logistic Regression and Random Forest modeling
-- Model evaluation using Recall, F1-score, ROC-AUC
-- Feature importance analysis
-- Streamlit web application deployment
-- Real-time churn prediction
-- Business recommendation engine
+Customer churn is one of the costliest problems in the telecom industry. This project builds a full ML pipeline — from raw data to a deployed interactive application — that identifies at-risk customers, quantifies revenue exposure, and explains predictions at the individual level using SHAP.
 
 ---
 
-# Tech Stack
+## Project Structure
 
-- Python
-- Pandas
-- NumPy
-- Scikit-learn
-- Seaborn
-- Matplotlib
-- Streamlit
-- Git & GitHub
-
----
-
-# Project Workflow
-
-1. Data Cleaning
-2. Exploratory Data Analysis
-3. Feature Engineering
-4. Machine Learning Modeling
-5. Model Evaluation
-6. Feature Importance Analysis
-7. Streamlit Deployment
+```
+├── data/
+│   ├── Telco-Customer-Churn.csv        # Raw dataset (7,043 records)
+│   └── telco_cleaned.csv               # Cleaned dataset after preprocessing
+├── notebooks/
+│   ├── 01_data_understanding.ipynb     # Data cleaning, type fixes, imbalance analysis
+│   ├── 02_eda.ipynb                    # EDA, churn drivers, revenue risk analysis
+│   └── 03_modeling.ipynb              # Modeling, SMOTE, XGBoost, SHAP explainability
+├── models/
+│   ├── churn_model.pkl                 # Trained XGBoost model
+│   ├── model_columns.pkl               # Feature column order for inference
+│   └── shap_explainer.pkl              # SHAP TreeExplainer for real-time explanations
+├── app/
+│   └── app.py                          # Streamlit application
+└── README.md
+```
 
 ---
 
-# Key Business Insights
+## Dataset
 
-- Customers with lower tenure show significantly higher churn probability.
-- Month-to-month contracts exhibit higher churn behavior.
-- Higher monthly charges are associated with increased churn risk.
-- Contract type and tenure emerged as major churn drivers.
-
----
-
-# Model Performance
-
-## Logistic Regression
-- Accuracy: ~80%
-- ROC-AUC: ~0.83
-- Strong baseline with good interpretability
-
-## Random Forest
-- Captured nonlinear relationships and feature interactions
-- Used for feature importance analysis
+- **Source:** IBM Telco Customer Churn Dataset
+- **Size:** 7,043 customer records, 21 features
+- **Target:** `Churn` — binary (Yes / No), ~26.6% positive rate
+- **Features:** Demographics, account info, service subscriptions, billing details
 
 ---
 
-# Top Churn Drivers
+## Methodology
 
-- TotalCharges
-- MonthlyCharges
-- tenure
-- Contract Type
-- Payment Method
+### 1. Data Understanding & Cleaning
+- Fixed `TotalCharges` stored as object dtype; converted to numeric
+- Removed 11 records with missing values
+- Flagged class imbalance (~26.6% churn) — flagged accuracy as misleading metric
 
----
+### 2. Exploratory Data Analysis
+- Identified top churn drivers: low tenure, high monthly charges, month-to-month contracts, fiber optic service
+- Revenue risk analysis: quantified monthly revenue at risk by contract type and tenure segment
+- Customer segmentation: Early (0–12m), Mid (12–36m), Loyal (36m+)
 
-# Streamlit Application
+### 3. Modeling
+| Model | CV ROC-AUC | Churn Recall | Churn F1 |
+|---|---|---|---|
+| Logistic Regression | 0.81 | 0.76 | 0.59 |
+| Random Forest | 0.82 | 0.69 | 0.60 |
+| **XGBoost** | **0.84** | **0.76** | **0.59** |
 
-The deployed Streamlit application allows users to:
-- Enter customer information
-- Predict churn probability
-- Generate business retention recommendations
+- **Class imbalance:** SMOTE applied on training data only (no leakage); `class_weight='balanced'` for LR and RF; `scale_pos_weight` for XGBoost
+- **Validation:** Stratified 5-fold cross-validation for all three models
+- **Selected model:** XGBoost — highest CV ROC-AUC (0.84 ± 0.005), stable generalisation
 
----
-
-# Screenshots
-
-## Application Home Page
-
-![Home Page](screenshots/homepage.png)
-
-## High-Risk Customer Prediction
-
-![High Risk Prediction](screenshots/high_risk_prediction.png)
-
-## Low-Risk Customer Prediction
-
-![Low Risk Prediction](screenshots/low_risk_prediction.png)
-
----
-## Business Impact
-
-This solution helps telecom companies:
-
-- Identify customers at risk of churn
-- Prioritize retention campaigns
-- Reduce customer acquisition costs
-- Improve customer lifetime value
-- Support data-driven business decisions
----
-
-# Future Improvements
-
-- SHAP Explainability
-- Power BI Dashboard
-- SQL Analytics Layer
-- Cloud Deployment
-- Advanced Feature Engineering
-- Recommendation System for Retention Strategies
+### 4. Explainability (SHAP)
+- Global feature importance via SHAP summary bar plot
+- Feature impact direction via beeswarm plot
+- Per-customer waterfall plot — explains exactly why a specific customer was flagged as high risk
 
 ---
 
-# Author
+## Key Findings
+
+- **Tenure** is the strongest churn signal — customers in their first 12 months churn at the highest rate
+- **Month-to-month contracts** show dramatically higher churn vs annual contracts
+- **High monthly charges** correlate strongly with churn, especially for fiber optic subscribers
+- **Revenue risk** is concentrated in early-tenure, month-to-month customers — the highest-priority retention segment
+
+---
+
+## Tech Stack
+
+| Layer | Tools |
+|---|---|
+| Data processing | Python, Pandas, NumPy |
+| ML modeling | Scikit-learn, XGBoost, imbalanced-learn (SMOTE) |
+| Explainability | SHAP |
+| Visualization | Matplotlib, Seaborn |
+| Deployment | Streamlit |
+| Persistence | Joblib |
+
+---
+
+## Setup
+
+```bash
+git clone https://github.com/your-username/churn-prediction-platform.git
+cd churn-prediction-platform
+pip install -r requirements.txt
+```
+
+Run the Streamlit app:
+```bash
+streamlit run app/app.py
+```
+
+Run notebooks in order:
+```
+01_data_understanding.ipynb → 02_eda.ipynb → 03_modeling.ipynb
+```
+
+---
+
+## Requirements
+
+```
+pandas
+numpy
+scikit-learn
+xgboost
+imbalanced-learn
+shap
+matplotlib
+seaborn
+streamlit
+joblib
+```
+
+---
+
+## Results
+
+- **XGBoost CV ROC-AUC:** 0.84 ± 0.005
+- **Churn Recall:** 76% — correctly identifies 3 in 4 actual churners
+- **Deployed:** Interactive Streamlit app with real-time prediction, risk segmentation, and SHAP-based individual explanations
+
 
 Ranjeeta Mashal
