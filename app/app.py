@@ -166,12 +166,23 @@ input_df = input_df.reindex(columns=model_columns, fill_value=0)
 # Convert all columns to numeric
 input_df = input_df.astype(float)
 
+
 # Predict
 if st.button("Predict Churn"):
 
     prediction = model.predict(input_df)[0]
 
     probability = model.predict_proba(input_df)[0][1]
+
+    # Risk Segmentation
+    if probability > 0.7:
+        risk = "High Risk"
+
+    elif probability > 0.4:
+        risk = "Medium Risk"
+
+    else:
+        risk = "Low Risk"
 
     st.subheader("Prediction Result")
 
@@ -180,18 +191,39 @@ if st.button("Predict Churn"):
     else:
         st.success(f"Customer likely to stay. Probability: {probability:.2f}")
 
-    # Business Recommendation
+    st.metric("Risk Category", risk)
+    
+   # Business Recommendation
     st.subheader("Business Recommendation")
 
     if probability > 0.7:
-        st.warning(
-            "High churn risk. Recommend retention offers and proactive customer support."
-        )
+
+     st.warning("""
+     High Churn Risk
+
+    Recommended Actions:
+    • Offer retention discount
+    • Assign dedicated support representative
+    • Review contract options
+    • Launch proactive engagement campaign
+    """)
+
     elif probability > 0.4:
-        st.info(
-            "Moderate churn risk. Monitor customer engagement closely."
-        )
+
+      st.info("""
+     Moderate Churn Risk
+
+    Recommended Actions:
+    • Monitor customer engagement
+    • Send personalized offers
+    • Follow up through customer success team
+    """)
+
     else:
-        st.success(
-            "Low churn risk. Customer retention probability is high."
-        )
+
+      st.success("""
+      Low Churn Risk
+
+    Customer likely to remain active.
+    Continue normal engagement strategy.
+    """)
