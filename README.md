@@ -134,6 +134,6 @@ joblib
 - **XGBoost CV ROC-AUC:** 0.84 ± 0.005
 - **Churn Recall:** 76% — correctly identifies 3 in 4 actual churners
 - **Deployed:** Interactive Streamlit app with real-time prediction, risk segmentation, and SHAP-based individual explanations
-
+- **Dashboard:** Interactive Tableau Public dashboard with churn KPIs, revenue risk segmentation, and customer-level scatter analysis — https://public.tableau.com/views/TelcoCustomerChurnProject_17821134672590/TelcoCustomerChurnAnalysis
 
 Ranjeeta Mashal
